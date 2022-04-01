@@ -67,10 +67,10 @@ def get_top_or_bottom(filename,pos,plottitle):
     plt.title(plottitle)
     return extension_vals[cutPoint]
 
-top_file = "./polymer_top.csv"
-bot_file = "polymer_bottom.csv"
-diam_top_file = "diameter_top.csv"
-diam_bot_file = "diameter_bottom.csv"
+top_file = "youngsModulusMeasurements/polymer_top.csv"
+bot_file = "youngsModulusMeasurements/polymer_bottom.csv"
+diam_top_file = "youngsModulusMeasurements/diameter_top.csv"
+diam_bot_file = "youngsModulusMeasurements/diameter_bottom.csv"
 top_of_polymer = get_top_or_bottom(top_file,221,"Top of Polymer")
 bot_of_polymer = get_top_or_bottom(bot_file,222,"Bottom of Polymer")
 top_of_diam = get_top_or_bottom(diam_top_file,223,"Top of Diameter")
@@ -89,7 +89,7 @@ print("Bottom of diameter at %f mm"%bot_of_diam)
 
 # diam bot
 # force extenstion
-force_ext_file = "force_extension.csv"
+force_ext_file = "youngsModulusMeasurements/force_extension.csv"
 force_extension_gradient = get_gradient(force_ext_file)
 
 
