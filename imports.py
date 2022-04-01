@@ -6,5 +6,6 @@ import scipy.stats
 
 from makeDifferenceImage import *
 from makeCurveFromDifferenceImage import *
-#from modelTheCurve import *
+from modelFunctions import *
+from modelTheCurve import *
 #from modelFunctions import *

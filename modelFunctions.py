@@ -1,8 +1,4 @@
-import numpy as np
-import cv2 as cv
-from matplotlib import pyplot as plt
-from scipy.optimize import curve_fit
-import scipy.stats
+from imports import *
 
 quad_init_vals = [0, 0, 0]
 def quadratic_fit(x, a, b, c):
