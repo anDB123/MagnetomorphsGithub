@@ -14,9 +14,11 @@ class curvedPolmerSample:
     elastomer = "Silicone Elastomer"
 #initialize method
     x_data , y_data = [], []
+    y_errors = []
     model_x_data, model_y_data = [], []
     difference_image = []
     fig,ax = plt.subplots()
+    redChiSq = -1
     def __init__(self, img_name, background_img_name, crop_array, thickness, current):
         self.img_name = img_name
         self.background_img_name = background_img_name
@@ -26,6 +28,7 @@ class curvedPolmerSample:
         self.reducedNoiseDifferenceImage()
         self.makeCurveFromDifferenceImage()
         self.modelTheCurve()
+        self.findChiSquared()
         self.makePlotOfModel()
 #instance methods
     # Instance method
@@ -34,16 +37,21 @@ class curvedPolmerSample:
     def reducedNoiseDifferenceImage(self):
         self.difference_image = reduce_noise(self.getDifferenceImage(), 100, 170)
     def makeCurveFromDifferenceImage(self):
-        self.x_data, self.y_data = makeCurveFromDifferenceImage(self.difference_image)
+        self.x_data, self.y_data, self.y_errors = makeCurveFromDifferenceImage(self.difference_image)
     def modelTheCurve(self):
         self.model_x_data, self.model_y_data =  modelTheCurve(self.x_data, self.y_data)
     def makePlotOfModel(self):
         self.ax.imshow(self.difference_image)
-        self.ax.scatter(self.x_data, self.y_data)
+        self.ax.errorbar(self.x_data, self.y_data,yerr=self.y_errors, ls='none')
         self.ax.plot(self.model_x_data, self.model_y_data, c='w')
+        self.ax.legend(["Means", "Model RedChiSq = {:.2f}".format(self.redChiSq)])
         # displayPlots
         plt.show()
-image = "29redBackground/DSC_0065 (3).JPG"
+    def findChiSquared(self):
+        self.redChiSq = find_reduced_chi_squared(self.y_data, self.model_y_data,self.y_errors)
+
+
+image = "29redBackground/DSC_0067 (3).JPG"
 bg_image = "29redBackground/DSC_0068 (3).JPG"
 crop_29 = [130, 1200, 300, 2700]
 first_sample = curvedPolmerSample(image, bg_image, crop_29, 2, 1)

@@ -8,4 +8,4 @@ from makeDifferenceImage import *
 from makeCurveFromDifferenceImage import *
 from modelFunctions import *
 from modelTheCurve import *
-#from modelFunctions import *
+from findFitParameters import *
