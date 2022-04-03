@@ -11,11 +11,16 @@ class curvedPolmerSample:
     model_x_data, model_y_data = [], []
     difference_image = []
     noise_reduction_array = []
+    start_of_curve = 0
+    end_of_curve = 0
+    curve_params = []
     # fig, ax = plt.subplots()
     redChiSq = -1
 
 
-    def __init__(self, img_name, background_img_name, crop_array, thickness, current, noise_reduction_array, displayText = True, text_size = 5, display_data=False):
+    def __init__(self, img_name, background_img_name, crop_array, thickness, current,
+                 noise_reduction_array, start_of_curve, end_of_curve, curve_params,
+                 displayText = True, text_size = 5, display_data=False):
         self.img_name = img_name
         self.background_img_name = background_img_name
         self.crop_array = crop_array
@@ -27,6 +32,9 @@ class curvedPolmerSample:
         self.makeCurveFromDifferenceImage()
         self.text_size = text_size
         self.display_data = display_data
+        self.start_of_curve = start_of_curve
+        self.end_of_curve = end_of_curve
+        self.curve_params = curve_params
         if self.scatter_worked:
             self.modelTheCurve()
             self.findChiSquared()
@@ -49,7 +57,14 @@ class curvedPolmerSample:
             self.scatter_worked = False
 
     def modelTheCurve(self):
-        self.model_x_data, self.model_y_data = modelTheCurve(self.x_data, self.y_data)
+        a, b = 1500, 2000
+        init_params = 1500, 2000
+        self.model_x_data, self.model_y_data, a, b, model_fitted_params = modelTheCurve(self.x_data, self.y_data,
+                                                                                        self.start_of_curve, self.end_of_curve,
+                                                                                        self.curve_params)
+        self.start_of_curve = a
+        self.end_of_curve = b
+        self.curve_params = model_fitted_params
 
     def findChiSquared(self):
         self.redChiSq = find_reduced_chi_squared(self.y_data, self.model_y_data, self.y_errors)

@@ -1,9 +1,9 @@
 from imports import *
 
-testNoiseReduction = True
+testNoiseReduction = False
 testCropping = False
-makingGrid = False
-makingCurveComparison = False
+makingGrid = True
+makingCurveComparison = True
 graph_dir = "C:/Users/AndyPC/Desktop/MagnetomorphsGithub/graphs/"
 
 crop_29 = [130, 1200, 300, 2800]
@@ -11,20 +11,25 @@ image_array = ["29redBackground/DSC_00{} (3).JPG".format(i) for i in range(59, 6
 currents_array = np.linspace(0, 4, 9)
 bg_image = "29redBackground/DSC_0068 (3).JPG"
 noise_reduction = [100, 210]
+curve_start, curve_end, curve_params = 1600, 2000, [10000, 1800, 800]
+sample_array = [curvedPolmerSample(image_array[0], bg_image, crop_29, 2, currents_array[0], noise_reduction,
+                                   curve_start, curve_end, curve_params)]
 if makingGrid or makingCurveComparison:
-    sample_array = [curvedPolmerSample(image, bg_image, crop_29, 2, current, noise_reduction) for image, current in
-                    zip(image_array, currents_array)]
+    for i in range(1, len(image_array)):
+        sample_array.append(curvedPolmerSample(image_array[i], bg_image, crop_29, 2, currents_array[i], noise_reduction,
+                                               sample_array[i - 1].start_of_curve, sample_array[i - 1].end_of_curve,
+                                               sample_array[i - 1].curve_params))
 
 if testNoiseReduction:
     print("Making noise reduction test")
-    rows, columns = 10, 10
+    rows, columns = 7, 7
     noise_test_sample_array = [curvedPolmerSample(image_array[0], bg_image, crop_29, 2, currents_array[0], [i, j],
                                                   displayText=False, text_size=5, display_data=False)
-                               for i in np.linspace(10, np.mean(noise_reduction), rows)
-                               for j in np.linspace(np.mean(noise_reduction), 230, columns)]
+                               for i in np.linspace(0, 255, rows)
+                               for j in np.linspace(0, 255, columns)]
     fig, axs = plt.subplots(rows, columns)
     chi_squared_array = np.array([noise_test_sample.redChiSq for noise_test_sample in noise_test_sample_array])
-    chi_squared_array = np.where(chi_squared_array>0, chi_squared_array, np.nan)
+    chi_squared_array = np.where(chi_squared_array > 0, chi_squared_array, np.nan)
     chi_squared_mesh = np.reshape(chi_squared_array, (rows, columns))
     print("Making plot of model")
     for sample, ax in zip(noise_test_sample_array, axs.flat): sample.makePlotOfModel(ax)
@@ -55,5 +60,6 @@ if makingCurveComparison:
     for sample in sample_array:
         sample.plot_errorbars(ax)
         sample.plot_model(ax)
+    ax.invert_yaxis()
     plt.legend()
     plt.show()
