@@ -17,13 +17,14 @@ if makingGrid or makingCurveComparison:
 
 if testNoiseReduction:
     print("Making noise reduction test")
-    rows, columns = 5, 5
+    rows, columns = 10, 10
     noise_test_sample_array = [curvedPolmerSample(image_array[0], bg_image, crop_29, 2, currents_array[0], [i, j],
                                                   displayText=False, text_size=5, display_data=False)
                                for i in np.linspace(10, np.mean(noise_reduction), rows)
                                for j in np.linspace(np.mean(noise_reduction), 230, columns)]
     fig, axs = plt.subplots(rows, columns)
-    chi_squared_array = [noise_test_sample.redChiSq for noise_test_sample in noise_test_sample_array]
+    chi_squared_array = np.array([noise_test_sample.redChiSq for noise_test_sample in noise_test_sample_array])
+    chi_squared_array = np.where(chi_squared_array>0, chi_squared_array, np.nan)
     chi_squared_mesh = np.reshape(chi_squared_array, (rows, columns))
     print("Making plot of model")
     for sample, ax in zip(noise_test_sample_array, axs.flat): sample.makePlotOfModel(ax)
@@ -31,6 +32,7 @@ if testNoiseReduction:
     x_mesh, y_mesh = np.meshgrid(np.linspace(10, np.mean(noise_reduction), rows + 1),
                                  np.linspace(np.mean(noise_reduction), 230, columns + 1))
     fig, ax0 = plt.subplots()
+    ax0.set_facecolor('black')
     ax0.set_xlabel("Lower Bound")
     ax0.set_ylabel("Upper Bound")
     cmap = plt.get_cmap('Purples')
