@@ -3,12 +3,12 @@ import cv2 as cv
 import matplotlib as mpl
 import os
 from matplotlib import pyplot as plt
+import matplotlib.pylab as pl
 import math
 from scipy.optimize import curve_fit
 import scipy.stats
 import copy
 import time
-
 from makeDifferenceImage import *
 from makeCurveFromDifferenceImage import *
 from modelFunctions import *
