@@ -1,6 +1,6 @@
-import matplotlib.pyplot as plt
-
 from imports import *
+
+
 class curvedPolmerSample:
     # properties of all dogs
     elastomer = "Silicone Elastomer"
@@ -17,10 +17,9 @@ class curvedPolmerSample:
     # fig, ax = plt.subplots()
     redChiSq = -1
 
-
     def __init__(self, img_name, background_img_name, crop_array, thickness, current,
                  noise_reduction_array, start_of_curve, end_of_curve, curve_params,
-                 displayText = True, text_size = 5, display_data=False):
+                 displayText=True, text_size=5, display_data=False):
         self.img_name = img_name
         self.background_img_name = background_img_name
         self.crop_array = crop_array
@@ -28,16 +27,12 @@ class curvedPolmerSample:
         self.current = current
         self.noise_reduction_array = noise_reduction_array
         self.displayText = displayText
-        self.reducedNoiseDifferenceImage()
-        self.makeCurveFromDifferenceImage()
         self.text_size = text_size
         self.display_data = display_data
         self.start_of_curve = start_of_curve
         self.end_of_curve = end_of_curve
         self.curve_params = curve_params
-        if self.scatter_worked:
-            self.modelTheCurve()
-            self.findChiSquared()
+        self.make_plot()
         # self.makePlotOfModel()
 
     # Instance method
@@ -57,10 +52,9 @@ class curvedPolmerSample:
             self.scatter_worked = False
 
     def modelTheCurve(self):
-        a, b = 1500, 2000
-        init_params = 1500, 2000
         self.model_x_data, self.model_y_data, a, b, model_fitted_params = modelTheCurve(self.x_data, self.y_data,
-                                                                                        self.start_of_curve, self.end_of_curve,
+                                                                                        self.start_of_curve,
+                                                                                        self.end_of_curve,
                                                                                         self.curve_params)
         self.start_of_curve = a
         self.end_of_curve = b
@@ -68,9 +62,16 @@ class curvedPolmerSample:
 
     def findChiSquared(self):
         self.redChiSq = find_reduced_chi_squared(self.y_data, self.model_y_data, self.y_errors)
-    def show_image(self,ax): ax.imshow(self.difference_image)
-    def plot_errorbars(self,ax): ax.errorbar(self.x_data, self.y_data, yerr=self.y_errors, ls='none', label="Errorbars")
-    def plot_model(self,ax): ax.plot(self.model_x_data, self.model_y_data, c='k', label="Model, I = {} A".format(self.current))
+
+    def show_image(self, ax):
+        ax.imshow(self.difference_image)
+
+    def plot_errorbars(self, ax):
+        ax.errorbar(self.x_data, self.y_data, yerr=self.y_errors, ls='none', label="Errorbars")
+
+    def plot_model(self, ax):
+        ax.plot(self.model_x_data, self.model_y_data, c='k', label="Model, I = {} A".format(self.current))
+
     def makePlotOfModel(self, ax):
         self.show_image(ax)
         if self.scatter_worked:
@@ -78,19 +79,23 @@ class curvedPolmerSample:
             self.plot_model(ax)
         if self.display_data:
             ax.text(0.05, 0.9,
-                    "$ \chi ^2 _{red} = $" + "{:.2f}".format(self.redChiSq) + ", I = {}, noiseR = {},{},\ncrop = {},{},{},{}".format(self.current,*self.noise_reduction_array,*self.crop_array),
+                    "$ \chi ^2 _{red} = $" + "{:.2f}".format(
+                        self.redChiSq) + ", I = {}, noiseR = {},{},\ncrop = {},{},{},{}".format(self.current,
+                                                                                                *self.noise_reduction_array,
+                                                                                                *self.crop_array),
                     horizontalalignment='left',
                     verticalalignment='top', transform=ax.transAxes,
                     size=self.text_size,
                     bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.2'))
         elif self.displayText:
-            ax.legend(loc='upper right',prop={'size': self.text_size})
+            ax.legend(loc='upper right', prop={'size': self.text_size})
             if self.scatter_worked:
                 ax.text(0.05, 0.9,
-                        "$ \chi ^2 _{red} = $" + "{:.2f}".format(self.redChiSq) + "\nCurrent = {} A".format(self.current),
+                        "$ \chi ^2 _{red} = $" + "{:.2f}".format(self.redChiSq) + "\nCurrent = {} A".format(
+                            self.current),
                         horizontalalignment='left',
                         verticalalignment='top', transform=ax.transAxes,
-                        size= self.text_size,
+                        size=self.text_size,
                         bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.2'))
             else:
                 ax.text(0.05, 0.9,
@@ -100,3 +105,26 @@ class curvedPolmerSample:
                         size=self.text_size,
                         bbox=dict(facecolor='white', edgecolor='black', boxstyle='round,pad=0.2'))
 
+    def make_plot(self):
+        self.reducedNoiseDifferenceImage()
+        self.makeCurveFromDifferenceImage()
+        if self.scatter_worked:
+            self.modelTheCurve()
+            self.findChiSquared()
+
+    def changeNoiseReduction(self, lowerLimit, upperLimit):
+        self.noise_reduction_array = [lowerLimit, upperLimit]
+        self.make_plot()  # refreshes the plot
+        return self
+
+
+def make_sample_array(image_array, bg_image, crop_array, currents_array, noise_reduction_array, initial_polymer_sample):
+    sample_array = [initial_polymer_sample]
+    for i in range(1, len(image_array)):
+        start_time = time.time()
+        sample_array.append(
+            curvedPolmerSample(image_array[i], bg_image, crop_array, 2, currents_array[i], noise_reduction_array,
+                               sample_array[i - 1].start_of_curve, sample_array[i - 1].end_of_curve,
+                               sample_array[i - 1].curve_params))
+        print("Time to make sample {} was {:.2f} seconds".format(i, time.time() - start_time))
+    return sample_array

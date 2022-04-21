@@ -1,12 +1,10 @@
-import numpy as np
-import cv2 as cv
-from matplotlib import pyplot as plt
-from scipy.optimize import curve_fit
 import scipy.stats
 
 from edgeDetectionFunctions import *
 from plottingFunctions import *
-from modelFunctions import *
+from deflectionCurveFitting.modelFunctions import *
+
+
 def make_noise_comparison_grid(image_name, background_name, crop_array):
     cols = 5
     rows = 5
@@ -33,8 +31,8 @@ def make_noise_comparison_grid(image_name, background_name, crop_array):
                 x_edges, y_edges = get_edges_x_and_y_arrays(edges_numpy)
                 ax.plot(x_edges, y_edges, label="Edges", linewidth=1, c='r')
                 fit_params, covar_matrix = curve_fit(quadratic_fit, x_edges, y_edges, p0=quad_init_vals)
-                ax.plot(x_edges,quadratic_fit(x_edges,*fit_params))
-                chi_squared = scipy.stats.chisquare(f_obs=y_edges,f_exp=quadratic_fit(x_edges,*fit_params))[0]
+                ax.plot(x_edges, quadratic_fit(x_edges, *fit_params))
+                chi_squared = scipy.stats.chisquare(f_obs=y_edges, f_exp=quadratic_fit(x_edges, *fit_params))[0]
                 print("Chi Squared = {:.2f}".format(chi_squared))
                 plt.legend(["Chi Squared = {:.2f}".format(chi_squared)])
                 plt.title("lowT = %d and highT = %d" % (low_T, high_T))
@@ -43,8 +41,9 @@ def make_noise_comparison_grid(image_name, background_name, crop_array):
             counter += 1
     plt.show()
 
+
 background_name = "red_background_curve_test/DSC_0105.JPG"
-image_name= "red_background_curve_test/DSC_0114.JPG"
+image_name = "red_background_curve_test/DSC_0114.JPG"
 crop_top, crop_bottom = 0, 2000
 crop_left, crop_right = 0, 3000
 crop_array = [crop_top, crop_bottom, crop_left, crop_right]

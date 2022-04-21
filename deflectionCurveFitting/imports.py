@@ -6,6 +6,8 @@ from matplotlib import pyplot as plt
 import math
 from scipy.optimize import curve_fit
 import scipy.stats
+import copy
+import time
 
 from makeDifferenceImage import *
 from makeCurveFromDifferenceImage import *
@@ -13,3 +15,8 @@ from modelFunctions import *
 from modelTheCurve import *
 from findFitParameters import *
 from curvedPolymerSample import *
+from testNoiseReduction import *
+from makeGraphs import *
+
+graph_dir = "C:/Users/AndyPC/Desktop/MagnetomorphsGithub/graphs/"
+mpl.rcParams["savefig.directory"] = graph_dir

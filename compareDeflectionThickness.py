@@ -1,13 +1,4 @@
-import numpy as np
-import cv2 as cv
-from matplotlib import pyplot as plt
-from scipy.optimize import curve_fit
-import scipy.stats
-import math
-
 from edgeDetectionFunctions import *
-from plottingFunctions import *
-from modelFunctions import *
 from fitting_code import *
 
 
@@ -40,14 +31,16 @@ def circular_deflection_delta_strain(radius, angle, inside_radius, outside_radiu
     total_arc_strain = total_inside_strain + total_outside_strain
     return total_arc_strain
 
+
 def find_elastic_energy(length, radius):
     angle = length / radius
     thickness = 100
     width = 1000
     youngsModulus = 871931.69
     area = thickness * width
-    absStrain = circular_deflection_delta_strain(radius,angle,radius-thickness/2,radius+thickness/2)
+    absStrain = circular_deflection_delta_strain(radius, angle, radius - thickness / 2, radius + thickness / 2)
     energy = strain * youngsModulus * area / length
+
 
 def find_total_curve_strain(x_values, y_max_vals, y_min_vals):
     for i in range(len(x_values)):
@@ -84,6 +77,7 @@ def physicalModelFunction():
     x = 0
     return x
 
+
 def get_x_and_y_data_from_image(image_name, background_name, crop_array):
     low_t, high_t = 100, 170
     img, bg, difference = create_difference_image(image_name, background_name, crop_array)
@@ -92,7 +86,7 @@ def get_x_and_y_data_from_image(image_name, background_name, crop_array):
     return x_edges, y_edges, y_edges_error
 
 
-def make_array_image_comparison_reference(image_array, background_name, crop_array, x_values, model_array,trim_end):
+def make_array_image_comparison_reference(image_array, background_name, crop_array, x_values, model_array, trim_end):
     # function to generate difference image, find edges, find centre between edges, model centres and plot the result
     cols = 3
     rows = math.ceil(len(image_array) / cols)
@@ -106,7 +100,7 @@ def make_array_image_comparison_reference(image_array, background_name, crop_arr
         print("Fitting with {}".format(model_array[0]))
         # using open cv to make image arrays
         img, bg, difference = create_difference_image(image_name, background_name, crop_array)
-        difference = reduce_noise(difference,100,170)
+        difference = reduce_noise(difference, 100, 170)
         x_edges, y_edges, y_edges_error = get_x_and_y_data_from_image(image_name, background_name, crop_array)
         x_edges, y_edges, y_edges_error = x_edges[:-trim_end], y_edges[:-trim_end], y_edges_error[:-trim_end]
 
@@ -114,7 +108,7 @@ def make_array_image_comparison_reference(image_array, background_name, crop_arr
         ax = plt.subplot(rows, cols, counter)
         # appending arrays
         ax.imshow(img)
-        ax.scatter(x_edges, y_edges,s=3)
+        ax.scatter(x_edges, y_edges, s=3)
         deflection_curves.append([x_edges, y_edges])
         counter += 1
     plt.tight_layout()
@@ -131,26 +125,27 @@ def make_array_image_comparison_reference(image_array, background_name, crop_arr
     plt.show()
 
 
-
 background_name = "29redBackground/DSC_0068 (3).JPG"
 image_array = [
     "29redBackground/DSC_0067 (3).JPG",
     "29redBackground/DSC_0079 (3).JPG",
     "29redBackground/DSC_0090 (3).JPG",
     "29redBackground/DSC_0096 (3).JPG"
-               ]
+]
 crop_top, crop_bottom = 300, 1250
 crop_left, crop_right = 0, 3000
 crop_array = [crop_top, crop_bottom, crop_left, crop_right]
 current_values = [0.000, 0.512, 0.999, 1.506, 2.030, 2.499, 2.997, 3.508, 3.975]
 model = linear_curve_linear_fit
-x_edges, y_edges, y_edges_error = get_x_and_y_data_from_image("29redBackground/DSC_0067 (3).JPG", background_name, crop_array)
-circle_test_array = [circle_fit,[1200,1600,450]]
+x_edges, y_edges, y_edges_error = get_x_and_y_data_from_image("29redBackground/DSC_0067 (3).JPG", background_name,
+                                                              crop_array)
+circle_test_array = [circle_fit, [1200, 1600, 450]]
 
-#test_model_initially(x_edges, y_edges, circle_test_array)
+# test_model_initially(x_edges, y_edges, circle_test_array)
 
-#show_differrence_image("29redBackground/DSC_0059 (3).JPG",background_name,crop_array)
+# show_differrence_image("29redBackground/DSC_0059 (3).JPG",background_name,crop_array)
 
-linear_curve_linear_model_array = [linear_curve_linear_fit, [1300.0, 2400.0,circle_test_array]]
+linear_curve_linear_model_array = [linear_curve_linear_fit, [1300.0, 2400.0, circle_test_array]]
 
-make_array_image_comparison_reference(image_array, background_name, crop_array, current_values, linear_curve_linear_model_array, 10)
+make_array_image_comparison_reference(image_array, background_name, crop_array, current_values,
+                                      linear_curve_linear_model_array, 10)

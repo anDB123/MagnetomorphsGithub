@@ -1,13 +1,5 @@
-import numpy as np
-import cv2 as cv
-from matplotlib import pyplot as plt
-from scipy.optimize import curve_fit
-import scipy.stats
-import math
-
 from edgeDetectionFunctions import *
-from plottingFunctions import *
-from modelFunctions import *
+from deflectionCurveFitting.modelFunctions import *
 
 
 def find_reduced_chi_squared(observed, predicted, errors):
@@ -62,6 +54,7 @@ def linear_quad_linear_fit(x_edges, y_edges, initial_a, initial_b):
     full_y_array = fit_first_middle_last(*get_first_middle_last_arrays(x_edges, y_edges, a, b))
     return x_edges, full_y_array, a, b
 
+
 def fit_first_middle_last_curve(x_edges_array, y_edges_array, model_array):
     [first_x_edges, middle_x_edges, last_x_edges], [first_y_edges, middle_y_edges,
                                                     last_y_edges] = x_edges_array, y_edges_array
@@ -70,7 +63,8 @@ def fit_first_middle_last_curve(x_edges_array, y_edges_array, model_array):
                                                         p0=linear_array[1])
     first_y_array = linear_fit(first_x_edges, *first_linear_params)
 
-    middle_curve_params, middle_curve_covar = curve_fit(model_array[0], middle_x_edges, middle_y_edges, p0=model_array[1])
+    middle_curve_params, middle_curve_covar = curve_fit(model_array[0], middle_x_edges, middle_y_edges,
+                                                        p0=model_array[1])
     middle_y_array = model_array[0](middle_x_edges, *middle_curve_params)
 
     last_linear_params, last_linear_covar = curve_fit(linear_array[0], last_x_edges, last_y_edges, p0=linear_array[1])
@@ -81,7 +75,8 @@ def fit_first_middle_last_curve(x_edges_array, y_edges_array, model_array):
 
 
 def linear_curve_linear_fit(x_edges, y_edges, a, b, embedded_model_array):
-    full_y_array, model_fitted_params = fit_first_middle_last_curve(*get_first_middle_last_arrays(x_edges, y_edges, a, b), embedded_model_array)
+    full_y_array, model_fitted_params = fit_first_middle_last_curve(
+        *get_first_middle_last_arrays(x_edges, y_edges, a, b), embedded_model_array)
     return x_edges, full_y_array, a, b, model_fitted_params
 
 
@@ -105,4 +100,3 @@ def estimate_errors(y_array):
             error = min_error
         error_array.append(error)
     return error_array
-

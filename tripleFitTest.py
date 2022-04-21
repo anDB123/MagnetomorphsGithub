@@ -1,13 +1,5 @@
-import numpy as np
-import cv2 as cv
-from matplotlib import pyplot as plt
-from scipy.optimize import curve_fit
-import scipy.stats
-import math
-
 from edgeDetectionFunctions import *
 from plottingFunctions import *
-from modelFunctions import *
 from fitting_code import *
 
 
@@ -18,7 +10,7 @@ def make_array_image_comparison_reference(image_array, background_name, crop_arr
     counter = 1
     low_t, high_t = 100, 170
     initial_a, initial_b = 1100.0, 1600.0
-    deflection_curves,deflection_fits,chi_squareds = [],[],[]
+    deflection_curves, deflection_fits, chi_squareds = [], [], []
     for image_name in image_array:
         # Keeping track of progress
         print("Working on " + image_name)
@@ -35,7 +27,8 @@ def make_array_image_comparison_reference(image_array, background_name, crop_arr
         chi_squared_label = "I = {}A, $\chi_r^2$ = {:.2f}".format(x_values[counter - 1], reduced_chi_squared)
         # Plotting
         ax = plt.subplot(rows, cols, counter)
-        plot_image_with_fit(ax,low_noise_difference,x_edges,y_edges,x_model_array,y_model_array,chi_squared_label,a,b)
+        plot_image_with_fit(ax, low_noise_difference, x_edges, y_edges, x_model_array, y_model_array, chi_squared_label,
+                            a, b)
         # appending arrays
         deflection_curves.append([x_edges, y_edges])
         deflection_fits.append([x_model_array, y_model_array])
