@@ -5,51 +5,57 @@ from imports import *
 
 testNoiseReduction = False
 testCropping = False
-makingGrid = False
-makingCurveComparison = False
+makingGrid = True
+makingCurveComparison = True
 showFirstImageIndividually = False
-testHSVNoiseReduction = True
+testHSVNoiseReduction = False
 
 graph_dir = "C:/Users/AndyPC/Desktop/MagnetomorphsGithub/graphs"
+
 image_array = ["../29redBackground/DSC_00{} (3).JPG".format(i) for i in range(59, 68)]
 bg_image = "../29redBackground/DSC_0068 (3).JPG"
-currents_array = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4]
+"""
 
-crop_29 = [130, 1200, 300, 2800]
-blue_only_noise_reduction = [100, 210]
+image_array = ["../betterContrast/DSC_00{}.JPG".format(i) for i in range(21, 60)]
+bg_image = "../betterContrast/DSC_0061.JPG"
+"""
+currents_array = np.linspace(0, 4, 9)
 
-lowH, highH = 100, 180
-lowS, highS = 0, 200
-lowV, highV = 10, 250
+crop_29 = [100, 1000, 300, 2800]
+blue_only_noise_reduction = [101, 210]
 
-any_colour_noise_reduction_array = [lowH, highH, lowS, highS, lowV, highV]
+any_colour_noise_reduction_array = [[0, 255], [0, 255], [100, 200]]
 thickness = 2
 number_of_curves = 30
 
-initial_polymer_sample = curvedPolmerSample(image_array[0], bg_image, crop_29, thickness, currents_array[0],
-                                            makeAnyColourDifferenceImage,
-                                            any_colour_reduce_noise, any_colour_noise_reduction_array, number_of_curves)
+init_vals = [10000, 0, 0]
+circle_bounds = [[1, 0, 0], [np.inf, np.inf, np.inf]]
+curve_params = [circle_fit, init_vals, circle_bounds]
+
+initial_difference_image = DifferenceImageObject(image_array[0], bg_image, crop_29, makeAnyColourDifferenceImage,
+                                                 any_colour_reduce_noise, any_colour_noise_reduction_array)
+
 if showFirstImageIndividually:
     fig, ax = plt.subplots()
-    initial_polymer_sample.plotImageWithEdgesAndModel(ax)
+    initial_difference_image.show_difference_image(ax)
     plt.show()
+    initial_difference_image.show_colour_diff_img()
 
-if testNoiseReduction:
-    plotNoiseReductionGrid(10, 10, initial_polymer_sample, 60, 160, 170, 240)
-
+initialPolymerSample = PolymerSample(2, 0)
+polymerModel = NCurveModel(curve_params, number_of_curves)
+initial_polymer_sample = CurvedPolymerSample(initial_difference_image, initialPolymerSample,
+                                             number_of_curves, polymerModel)
 if testHSVNoiseReduction:
-    rows, columns = 3, 3
-    fig, axs = plt.subplots(rows, columns)
-    hue_min_vals = np.linspace(10, 100, rows)
-    hue_max_vals = np.linspace(120, 170, columns)
-    for i in range(rows):
-        for j in range(columns):
-            hsv_limits = hue_min_vals[i], hue_max_vals[j], 0, 255, 0, 255
-            initial_polymer_sample.changeHSVNoiseReduction(hsv_limits)
-            initial_polymer_sample.plotDifferenceImage(axs[i, j])
-    plt.show()
+    rows, columns = 5, 5
+    limits_array = [0, 100, 150, 255]
+    choice = 2
+    make_hsv_comparison_grid(initial_difference_image, rows, columns, limits_array, choice,
+                             any_colour_noise_reduction_array)
+
 if makingGrid or makingCurveComparison:
     sample_array = make_sample_array(image_array, currents_array, initial_polymer_sample)
+    # for sample in sample_array:
+    #    sample.difference_image_obj.show_colour_diff_img()
 
 if makingGrid:
     make_sample_fit_grid(sample_array)

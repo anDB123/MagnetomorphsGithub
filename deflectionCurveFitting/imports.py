@@ -9,6 +9,8 @@ from scipy.optimize import curve_fit
 import scipy.stats
 import copy
 import time
+import re
+
 from makeDifferenceImage import *
 from makeCurveFromDifferenceImage import *
 from modelFunctions import *

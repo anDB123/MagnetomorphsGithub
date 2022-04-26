@@ -1,8 +1,5 @@
 from imports import *
 
-def find_edges_cv(image_cv, a, b):
-    edges = cv.Canny(image_cv, a, b)
-    return edges
 
 def get_edges_x_and_y_arrays(edges_np):
     # this function should return an array of values where the edges are
@@ -34,8 +31,8 @@ def get_edges_x_and_y_arrays(edges_np):
     return x_array, y_array, y_errors
 
 
-def makeCurveFromDifferenceImage(difference_image):
-    edges_cv = find_edges_cv(difference_image, 100, 200)
+def makeCurveFromDifferenceImage(difference_image, a, b, aperture_size):
+    edges_cv = cv.Canny(difference_image, a, b, aperture_size)
     edges_np = np.where(edges_cv == 255)
     x_means, y_means, y_errors = get_edges_x_and_y_arrays(edges_np)
     return x_means, y_means, y_errors
