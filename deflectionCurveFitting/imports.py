@@ -21,6 +21,7 @@ from testNoiseReduction import *
 from makeGraphs import *
 from physicalModel import *
 from physicalModelManyCurves import *
+from PhysicalModelManyCurvesOptimized import *
 
 graph_dir = "C:/Users/AndyPC/Desktop/MagnetomorphsGithub/graphs/"
 mpl.rcParams["savefig.directory"] = graph_dir

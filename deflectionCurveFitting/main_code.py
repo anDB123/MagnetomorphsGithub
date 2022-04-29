@@ -22,7 +22,7 @@ currents_array = np.linspace(0, 4, 5)
 crop_29 = [600, 1300, 300, 2800]
 any_colour_noise_reduction_array = [[0, 255], [0, 255], [200, 255]]
 
-thickness = 1.5 * 10 ** -3  # it was about 1 mm
+thickness = 2 * 10 ** -3  # it was about 1 mm
 width = 10 * 10 ** -3  # made to be exactly 1cm
 youngModulus = 871931.69  # in pa found elsewhere in code
 total_length = 55 * 10 ** -3  # around 6cm (this should not affect curve shape but will in this case)
@@ -43,7 +43,7 @@ initial_difference_image = DifferenceImageObject(image_array[0], bg_image, crop_
                                                  any_colour_reduce_noise, any_colour_noise_reduction_array)
 initialPolymerSample = PolymerSample(0, 0)
 
-physicalModel = PhysicalModelManyCurves(currents_array[0], properties_array)
+physicalModel = PhysicalModelManyCurvesOptimised(currents_array[0], properties_array, [0] * 10)
 physicalModel.update_current(0)
 if showFirstImageIndividually:
     fig, ax = plt.subplots()

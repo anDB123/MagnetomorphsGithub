@@ -145,11 +145,13 @@ class PolymerPlotMethods:
             y_error = 10
             # temp_y_errors.append(np.std(self.y_data[i - averaging_size:i + averaging_size]))
             temp_y_errors.append(y_error)
+        temp_x_data, temp_y_data = temp_x_data, temp_y_data
         self.x_data, self.y_data, self.y_errors = temp_x_data, temp_y_data, temp_y_errors
 
     def makeCurveFromDifferenceImage(self):
         self.x_data, self.y_data, self.y_errors = makeCurveFromDifferenceImage(
             self.difference_image_obj.difference_image, 100, 200, 3)
+        self.x_data, self.y_data, self.y_errors = self.x_data[50:], self.y_data[50:], self.y_errors[50:]
         self.gaussian_averaging_of_y_data()
         self.scatter_worked = True
         if len(self.y_data) < 100:
