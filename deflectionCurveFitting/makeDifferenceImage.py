@@ -29,6 +29,16 @@ def makeAnyColourDifferenceImage(image_name, background_name, crop_array):
     return difference
 
 
+def useOriginalImageForFilter(image_name, background_name, crop_array):
+    crop_top, crop_bottom, crop_left, crop_right = crop_array
+
+    img = cv.imread(image_name)
+
+    img = img[crop_top:crop_bottom, crop_left:crop_right]
+
+    return img
+
+
 def blue_only_reduce_noise(image_cv, lowT, highT):
     return np.where((image_cv > lowT) & (image_cv < highT), image_cv, 0)
 
@@ -50,7 +60,6 @@ def any_hsv_reduce_noise(image_cv, hsv_noise_reduction_array):
 
 
 def any_colour_reduce_noise(image_cv, rgb_noise_reduction_array):
-    hsv_img = cv.cvtColor(image_cv, cv.COLOR_BGR2HSV)
     lowR, highR = rgb_noise_reduction_array[0]
     lowG, highG = rgb_noise_reduction_array[1]
     lowB, highB = rgb_noise_reduction_array[2]
@@ -60,7 +69,7 @@ def any_colour_reduce_noise(image_cv, rgb_noise_reduction_array):
     grayscale = cv.cvtColor(filtered_image, cv.COLOR_BGR2GRAY)
     final_image = grayscale
     print("Made difference image")
-    return final_image
+    return blue_channel
 
 
 def make_hsv_comparison_grid(initial_difference_image, rows, columns, limits_array, number_choice,

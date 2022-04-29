@@ -78,6 +78,9 @@ class PolymerModel:
     def plotModel(self, ax):
         return
 
+    def update_current(self, new_current):
+        return
+
 
 class NCurveModel(PolymerModel):
     all_fitted_curves = None
@@ -115,23 +118,6 @@ class NCurveModel(PolymerModel):
             ax.plot(x_vals[i], y_vals[i], color=(heat_colors[i], 0, 0))
 
 
-class PhysicalModel(PolymerModel):
-    model_x_data = None
-    model_y_data = None
-
-    def __init__(self, thickness, youngsModulus, fieldStrength, magnetStrength):
-        self.thickness = thickness
-        self.youngsModulus = youngsModulus
-        self.fieldStrength = fieldStrength
-        self.magnetStrength = magnetStrength
-
-    def fitModel(self, x_data, y_data):
-        return
-
-    def plotModel(self, ax):
-        return
-
-
 class LinearCurveLinearModel(PolymerModel):
     model_x_data = None
     model_y_data = None
@@ -156,7 +142,9 @@ class PolymerPlotMethods:
         for i in range(averaging_size, len(self.x_data) - 2 * averaging_size):
             temp_x_data.append(self.x_data[i])
             temp_y_data.append(np.mean(self.y_data[i - averaging_size:i + averaging_size]))
-            temp_y_errors.append(np.std(self.y_data[i - averaging_size:i + averaging_size]))
+            y_error = 10
+            # temp_y_errors.append(np.std(self.y_data[i - averaging_size:i + averaging_size]))
+            temp_y_errors.append(y_error)
         self.x_data, self.y_data, self.y_errors = temp_x_data, temp_y_data, temp_y_errors
 
     def makeCurveFromDifferenceImage(self):
@@ -230,6 +218,7 @@ class CurvedPolymerSample(PolymerSample, PolymerPlotMethods):
     def change_diff_image_and_current(self, image, current):
         self.difference_image_obj.replaceImage(image)
         self.polymerSample.current = current
+        self.shapeFitModel.update_current(current)
         self.analyseData()
 
 

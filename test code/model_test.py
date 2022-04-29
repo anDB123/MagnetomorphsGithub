@@ -107,15 +107,61 @@ def test_curvature_angles(max_angle, startpoint, number_of_curves, properties_ar
         elastic_gravity_energies[i] = energies_array
 
     fig, ax = plt.subplots()
+    ax.set_xlabel("X Values (m)")
+    ax.set_ylabel("Y Values (m)")
     for x, y in zip(x_arrays, y_arrays):
         ax.plot(x, y)
     plt.show()
     fig, ax = plt.subplots()
+    ax.set_xlabel("Final Angle (Degrees)")
+    ax.set_ylabel("Energy (J)")
     ax.plot(angle_array, total_energies, label="Total Energy")
     ax.plot(angle_array, mag_potential_energies, label="Magnetic Potential Energy")
     ax.plot(angle_array, mag_gravity_energies, label="Magnetic Gravitational Energy")
     ax.plot(angle_array, elastic_potential_energies, label="Elastic Potential Energy")
     ax.plot(angle_array, elastic_gravity_energies, label="Elastomer Gravitational Potential Energy")
+    ax.legend()
+    plt.show()
+
+
+def test_curvature_startpoints(fixed_angle, number_of_curves, properties_array, number_of_sections):
+    startpoint_array = np.linspace(0, properties_array[3], number_of_curves)
+
+    total_energies = np.zeros(number_of_curves)
+    mag_potential_energies = np.zeros(number_of_curves)
+    mag_gravity_energies = np.zeros(number_of_curves)
+    elastic_potential_energies = np.zeros(number_of_curves)
+    elastic_gravity_energies = np.zeros(number_of_curves)
+
+    x_arrays = []
+    y_arrays = []
+    for i in range(0, number_of_curves):
+        # print("Angle = {}".format(angle_array[i]))
+        startpoint = startpoint_array[i]
+        curvature = fixed_angle / 180 * np.pi / (total_length - startpoint)
+        energies_array, flat_energy_x_array, flat_energy_y_array = find_total_energy(flat_then_const_curve_angle_func,
+                                                                                     [curvature, startpoint],
+                                                                                     number_of_sections,
+                                                                                     properties_array)
+        x_arrays.append(flat_energy_x_array)
+        y_arrays.append(flat_energy_y_array)
+        total_energies[i], mag_potential_energies[i], mag_gravity_energies[i], elastic_potential_energies[i], \
+        elastic_gravity_energies[i] = energies_array
+
+    fig, ax = plt.subplots()
+    ax.set_xlabel("X Values (m)")
+    ax.set_ylabel("Y Values (m)")
+    for x, y in zip(x_arrays, y_arrays):
+        ax.plot(x, y)
+    plt.show()
+    fig, ax = plt.subplots()
+    ax.set_xlabel("Startpoint (m)")
+    ax.set_ylabel("Energy (J)")
+    ax.plot(startpoint_array, total_energies, label="Total Energy")
+    ax.plot(startpoint_array, mag_potential_energies, label="Magnetic Potential Energy")
+    ax.plot(startpoint_array, mag_gravity_energies, label="Magnetic Gravitational Energy")
+    ax.plot(startpoint_array, elastic_potential_energies, label="Elastic Potential Energy")
+    ax.plot(startpoint_array, elastic_gravity_energies, label="Elastomer Gravitational Potential Energy")
     ax.legend()
     plt.show()
 
@@ -133,8 +179,9 @@ density = 1000  # assumed same as water
 properties_array = [thickness, width, youngModulus, total_length, magnet_thickness, magnet_mass, magnet_strength,
                     field_strength, density]
 
-
-# test_curvature_angles(360, 0.04, 20, properties_array, 30)
+test_curvature_angles(90, 0.03, 20, properties_array, 30)
+test_curvature_startpoints(45, 20, properties_array, 30)
+"""
 
 def make_min_energy_curve(properties_array):
     min_angle, min_startpoint = test_angles_and_startpoints(100, 100, 90, 20, properties_array)
@@ -157,3 +204,4 @@ ax.set_ylim(-0.01, total_length + 0.01)
 ax.set_title("Minimized Energy Curves")
 ax.legend()
 plt.show()
+"""

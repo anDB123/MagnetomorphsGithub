@@ -19,6 +19,8 @@ from findFitParameters import *
 from curvedPolymerSample import *
 from testNoiseReduction import *
 from makeGraphs import *
+from physicalModel import *
+from physicalModelManyCurves import *
 
 graph_dir = "C:/Users/AndyPC/Desktop/MagnetomorphsGithub/graphs/"
 mpl.rcParams["savefig.directory"] = graph_dir

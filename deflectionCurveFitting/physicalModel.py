@@ -1,7 +1,9 @@
+import matplotlib.pyplot as plt
+
 from imports import *
 
 
-class PhysicalModel:
+class PhysicalModel(PolymerModel):
     all_fitted_curves = None
     all_fitted_params = None
     limits_array = None
@@ -9,7 +11,7 @@ class PhysicalModel:
     model_y_data = None
 
     def __init__(self, current, thickness, width, youngModulus, total_length, magnet_thickness, magnet_mass,
-                 magnet_strength, field_strength, density):
+                 magnet_strength, density):
         self.current = current
         self.thickness = thickness
         self.width = width
@@ -18,11 +20,15 @@ class PhysicalModel:
         self.magnet_thickness = magnet_thickness
         self.magnet_mass = magnet_mass
         self.magnet_strength = magnet_strength
-        self.field_strength = field_strength
         self.density = density
-        self.properties_array = [thickness, width, youngModulus, total_length, magnet_thickness, magnet_mass,
-                                 magnet_strength,
-                                 field_strength, density]
+        self.field_strength = current * 0.0015
+        self.properties_array = [self.thickness, self.width, self.youngModulus, self.total_length,
+                                 self.magnet_thickness, self.magnet_mass, self.magnet_strength, self.field_strength,
+                                 density]
+
+    def update_current(self, new_current):
+        self.current = new_current
+        self.properties_array[7] = self.current * 0.0015
 
     def find_total_energy(self, angle_function, angle_func_init_array, number_of_arcs, properties_array):
         thickness, width, youngModulus, total_length, magnet_thickness, magnet_mass, magnet_strength, field_strength, density = properties_array
@@ -52,12 +58,12 @@ class PhysicalModel:
 
     def flat_then_const_curve_angle_func(self, length_array, curvature_array):
         curvature_const, curve_start = curvature_array
-        returned_length_array = np.zeros(len(length_array))
+        returned_angle_array = np.zeros(len(length_array))
         length_array = length_array - curve_start
         for i in range(len(length_array)):
             if length_array[i] >= 0:
-                returned_length_array[i] = curvature_const * length_array[i]
-        return returned_length_array
+                returned_angle_array[i] = curvature_const * length_array[i]
+        return returned_angle_array
 
     def test_angles_and_startpoints(self, num_angles_tested, num_startpoints_tested, max_angle, number_of_sections,
                                     properties_array):
@@ -75,7 +81,7 @@ class PhysicalModel:
             for j in range(0, num_startpoints_tested):
                 startpoint = startpoint_array[j]
                 curvature = angle_array[i] * np.pi / (180 * (max_length - startpoint))
-                energies_array, flat_energy_x_array, flat_energy_y_array = find_total_energy(
+                energies_array, flat_energy_x_array, flat_energy_y_array = self.find_total_energy(
                     self.flat_then_const_curve_angle_func,
                     [curvature, startpoint],
                     number_of_sections, properties_array)
@@ -91,12 +97,14 @@ class PhysicalModel:
         cbar.set_label('Energy', rotation=270, labelpad=30)
         ax.scatter(angle_array[min_x], startpoint_array[min_y], label="Minimum Point")
         ax.legend()
+        ax.set_xlabel("Deflection Angle (degrees)")
+        ax.set_ylabel("Deflection start point (m)")
         plt.show()
         """
         return min_angle, min_startpoint
 
     def make_min_energy_curve(self):
-        min_angle, min_startpoint = self.test_angles_and_startpoints(100, 100, 90, 20, properties_array)
+        min_angle, min_startpoint = self.test_angles_and_startpoints(100, 100, 90, 20, self.properties_array)
         min_curvature = min_angle * np.pi / 180 / (self.total_length - min_startpoint)
         energies_array, flat_energy_x_array, flat_energy_y_array = self.find_total_energy(
             self.flat_then_const_curve_angle_func,
@@ -107,7 +115,48 @@ class PhysicalModel:
         return flat_energy_x_array, flat_energy_y_array
 
     def fitModel(self, x_data, y_data):
-        self.model_x_data, self.model_y_data = self.make_min_energy_curve()
+        min_angle, min_startpoint = self.test_angles_and_startpoints(100, 100, 90, 20, self.properties_array)
+        min_angle = min_angle * np.pi / 180
+        x_offset = min(x_data)
+
+        x_data = x_data - x_offset
+
+        output_length = max(x_data)
+        modelled_length = self.total_length
+        scaling = output_length / modelled_length
+        min_startpoint = min_startpoint * scaling
+        print("output length = {}, min_startpoint = {}".format(output_length, min_startpoint))
+        curved_iterations = int(math.ceil(output_length - min_startpoint))
+        curved_length = 0
+        # y_offset = np.mean(y_data[:-curved_iterations])
+        y_offset = np.mean(y_data[:-curved_iterations])
+        for x, angle in zip(np.linspace(1, 1, curved_iterations), np.linspace(0, min_angle, curved_iterations)):
+            curved_length += x / np.cos(angle)
+        print("max_angle - {}, curved_length = {}".format(min_angle, curved_length))
+        angle = 0
+        current_l = 0
+        current_y = 0
+        self.model_x_data = x_data
+        self.model_y_data = []
+        for i in range(len(x_data)):
+            if x_data[i] < min_startpoint:
+                self.model_y_data.append(0)
+            else:
+                change_in_x = x_data[i] - x_data[i - 1]
+                change_in_l = change_in_x / np.cos(angle)
+                current_l = current_l + change_in_l
+                angle = current_l / (curved_length) * min_angle
+                print("X_value = {}, Delta x = {}, delta l = {}, current_length = {}, angle = {}".format(x_data[i],
+                                                                                                         change_in_x,
+                                                                                                         change_in_l,
+                                                                                                         current_l,
+                                                                                                         angle))
+                current_y = current_y + change_in_l * np.sin(angle)
+                self.model_y_data.append(current_y)
+        self.model_x_data += x_offset
+        self.model_y_data = y_offset - self.model_y_data
+        self.model_x_data = np.array(self.model_x_data)
+        self.model_y_data = np.array(self.model_y_data)
 
     def plotModel(self, ax):
-        ax.plot(self.model_x_data, self.model_y_data)
+        ax.plot(self.model_x_data, self.model_y_data, label="Model data")
