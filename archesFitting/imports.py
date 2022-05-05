@@ -19,8 +19,6 @@ from findFitParameters import *
 from curvedPolymerSample import *
 from testNoiseReduction import *
 from makeGraphs import *
-from physicalModel import *
-from physicalModelManyCurves import *
 from PhysicalModelManyCurvesOptimized import *
 from PhysicalModelManyCurvesGradient import *
 

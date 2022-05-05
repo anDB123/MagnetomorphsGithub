@@ -5,7 +5,7 @@ import numpy as np
 from imports import *
 
 
-class PhysicalModelManyCurvesOptimised(PolymerModel):
+class PhysicalModelManyCurvesGradient(PolymerModel):
     all_fitted_curves = None
     all_fitted_params = None
     limits_array = None
@@ -29,25 +29,30 @@ class PhysicalModelManyCurvesOptimised(PolymerModel):
         arc_length = self.total_length / energy_curve_resolution
         x_array, y_array = np.zeros(energy_curve_resolution + 1), np.zeros(energy_curve_resolution + 1)
         all_lengths = np.linspace(0, self.total_length, energy_curve_resolution)
-        all_angles = angle_function(all_lengths, angle_func_init_array)
+        all_angles = np.array(angle_function(all_lengths, angle_func_init_array))
+
         for current_angle, index in zip(all_angles, range(0, energy_curve_resolution)):
             x_array[index + 1] = x_array[index] + arc_length * np.cos(current_angle)
             y_array[index + 1] = y_array[index] + arc_length * np.sin(current_angle)
+        heights_array = y_array - min(y_array)
         magnetic_potential_energy = -1 / (4 * np.pi * 10 ** -7) * self.magnet_strength * \
                                     self.magnet_thickness ** 3 * np.pi / 4 * self.field_strength * \
                                     np.sin(all_angles[-1])
-        magnet_gravitational_energy = np.abs(y_array[-1] * 9.81 * self.magnet_mass)
+        magnet_gravitational_energy = heights_array[-1] * 9.81 * self.magnet_mass
         elastic_potential_energy = 0
         elastomer_graviational_energy = 0
-        for height in y_array:
-            elastomer_graviational_energy += np.absolute(
-                self.density * self.thickness * self.width * arc_length * 9.81 * height)
+        for height in heights_array:
+            elastomer_graviational_energy += self.density * self.thickness * self.width * arc_length * 9.81 * height
         for i in range(1, len(all_angles)):
-            elastic_potential_energy += np.absolute(
+            elastic_potential_energy += np.abs(
                 1 / (4 * arc_length) * (self.youngModulus * self.thickness ** 3 * self.width) * \
                 (all_angles[i] - all_angles[i - 1]) ** 3)
-        total_energy = magnetic_potential_energy + magnet_gravitational_energy + elastic_potential_energy + elastomer_graviational_energy
+        total_energy = magnetic_potential_energy + elastic_potential_energy + elastomer_graviational_energy
         energy_array = total_energy, magnetic_potential_energy, magnet_gravitational_energy, elastic_potential_energy, elastomer_graviational_energy
+        print(f"Energies = {energy_array}")
+        if all_angles[-1] < - np.pi / 2:
+            return [1000000], [1], [1]
+
         return energy_array, x_array, y_array
 
     def many_curve_angle_func(self, length_array, curvature_array):
@@ -59,18 +64,19 @@ class PhysicalModelManyCurvesOptimised(PolymerModel):
         current_angle = 0
         for i in range(num_of_curves):
             for j in range(arc_indexes[i], arc_indexes[i + 1]):
-                angle_difference = curvature_array[i] * arc_length / (arc_indexes[i + 1] - arc_indexes[i])
+                change_in_length = (arc_indexes[i + 1] - arc_indexes[i])
+                angle_difference = curvature_array[i] * arc_length / change_in_length
                 current_angle += angle_difference
                 angle_array[j] = current_angle
         return angle_array
 
-    def n_dimensional_energy_gradient(self, current_curvature_array, perturbation, energy_curve_resolution, ):
+    def n_dimensional_energy_gradient(self, current_curvature_array, perturbation, energy_curve_resolution):
         energy_gradient_array = []
         current_energy, x_current, y_current = self.find_total_energy(self.many_curve_angle_func,
                                                                       current_curvature_array, energy_curve_resolution)
         perturbation_array = [perturbation] * len(current_curvature_array)
         for i in range(len(perturbation_array)):
-            temp_curvature_array = current_curvature_array
+            temp_curvature_array = copy.deepcopy(current_curvature_array)
             temp_curvature_array[i] += perturbation_array[i]
             perturbed_energy, perturbed_x, perturbed_y = self.find_total_energy(self.many_curve_angle_func,
                                                                                 temp_curvature_array,
@@ -83,36 +89,45 @@ class PhysicalModelManyCurvesOptimised(PolymerModel):
         number_of_curves = len(self.initial_guesses)
         print(f"Testing {number_of_curves} curvatures")
         curvature_array = self.initial_guesses
+        length_limits = np.linspace(0, self.total_length, len(curvature_array) + 1)
         continue_bool = True
         scaling_counter = 0
+
         delta_energy_difference_array = []
+        energy_array = []
+        plt.ion()
+        figure, axs = plt.subplots(3)
+        x_values, y_values = self.plot_curvature_model(curvature_array)
+        axs[0].set_title("Predicted Shape")
+        axs[1].set_title("Rate of improvement (change in energy)")
+        axs[2].set_title("Total Energy")
+        line1, = axs[0].plot(x_values, y_values)
+        line2, = axs[1].plot(x_values, y_values)
+        line3, = axs[2].plot(x_values, y_values)
+
         while continue_bool:
-            candidate_energies = []
-            candidate_curvatures = []
             current_energy, x, y = self.find_total_energy(self.many_curve_angle_func,
                                                           curvature_array,
                                                           energy_curve_resolution)
+            gradient_array = np.array(
+                self.n_dimensional_energy_gradient(curvature_array, 0.1, 100))
+            # gradient_array = np.where(gradient_array > 0, gradient_array, 0)
+            learning_rate = 1000000
+            new_curvature_array = curvature_array - gradient_array * learning_rate
+            print(f"curvature_array = {curvature_array}")
+            print(f"gradient_array = {gradient_array}")
+            print(f"new_curvature_array = {new_curvature_array}")
+
+            best_candidate_energy, x, y = self.find_total_energy(self.many_curve_angle_func,
+                                                                 new_curvature_array,
+                                                                 energy_curve_resolution)
+            best_candidate_energy = best_candidate_energy[0]
             current_energy = current_energy[0]
-            for i in range(len(curvature_array)):
-                temp_curvature_array = copy.deepcopy(curvature_array)
-                temp_curvature_array[i] += curvature_testing_resolution
-                temp_energy_array, x, y = self.find_total_energy(self.many_curve_angle_func,
-                                                                 temp_curvature_array,
-                                                                 energy_curve_resolution)
-                candidate_energies.append(temp_energy_array[0])
-                candidate_curvatures.append(temp_curvature_array)
-            for j in range(len(curvature_array)):
-                temp_curvature_array = copy.deepcopy(curvature_array)
-                temp_curvature_array[i] -= curvature_testing_resolution
-                temp_energy_array, x, y = self.find_total_energy(self.many_curve_angle_func,
-                                                                 temp_curvature_array,
-                                                                 energy_curve_resolution)
-                candidate_energies.append(temp_energy_array[0])
-                candidate_curvatures.append(temp_curvature_array)
-            best_candidate_index = candidate_energies.index(min(candidate_energies))
-            best_candidate_energy = min(candidate_energies)
+            print(f"best_candidate_energy = {best_candidate_energy}, current_energy = {current_energy}")
+
             if best_candidate_energy < current_energy:
-                curvature_array = candidate_curvatures[best_candidate_index]
+                energy_array.append(best_candidate_energy)
+                curvature_array = new_curvature_array
                 new_energy_difference = current_energy - best_candidate_energy
                 if scaling_counter > 1:
                     delta_energy_difference = np.abs(new_energy_difference - old_energy_difference)
@@ -127,27 +142,61 @@ class PhysicalModelManyCurvesOptimised(PolymerModel):
                 curvature_testing_resolution *= 0.1
             else:
                 continue_bool = False
+            x_array, y_array = self.plot_curvature_model(curvature_array)
+            line1.set_xdata(x_array)
+            line1.set_ydata(y_array)
+            axs[0].set_ylim([np.min(y_array), np.max(y_array)])
+            axs[0].set_xlim([np.min(x_array), np.max(x_array)])
+            if scaling_counter > 3:
+                x_vals = np.linspace(0, len(delta_energy_difference_array), len(delta_energy_difference_array))
+                axs[1].set_ylim([np.min(delta_energy_difference_array), np.max(delta_energy_difference_array)])
+                axs[1].set_xlim([0, len(delta_energy_difference_array)])
+                line2.set_xdata(x_vals)
+                line2.set_ydata(delta_energy_difference_array)
+                axs[1].set_yscale("log")
 
+                line3.set_xdata(np.linspace(0, len(energy_array), len(energy_array)))
+                line3.set_ydata(energy_array)
+                axs[2].set_ylim([np.min(energy_array), np.max(energy_array)])
+                axs[2].set_xlim([0, len(energy_array)])
+                # axs[2].set_yscale("log")
+
+            figure.canvas.draw()
+            figure.canvas.flush_events()
+            time.sleep(0.2)
         energies_array, min_x_vals, min_y_vals = self.find_total_energy(self.many_curve_angle_func, curvature_array,
                                                                         energy_curve_resolution)
         print()
         print("The minimum energy curvatures are {}".format(curvature_array))
         return min_x_vals, min_y_vals, curvature_array
 
-    def make_model_data(self):
+    def plot_curvature_model(self, curvatures):
+        resolution = 100
+        arc_length = self.total_length / (resolution)
+        x_array, y_array = np.zeros(resolution + 1), np.zeros(resolution + 1)
+        all_lengths = np.linspace(0, self.total_length, resolution)
+        all_angles = self.many_curve_angle_func(all_lengths, curvatures)
+        for current_angle, index in zip(all_angles, range(0, resolution)):
+            x_array[index + 1] = x_array[index] + arc_length * np.cos(current_angle)
+            y_array[index + 1] = y_array[index] + arc_length * np.sin(current_angle)
+
+        return x_array, y_array
+
+    def make_model_data(self, curvatures, curvature_length_limits, max_x):
         angle = 0
         current_l = 0
         current_y = 0
-
+        self.curve_x_limits = []
+        self.curve_y_limits = []
         # trying to map the length, angle function to x, y points for easy comparison.
 
         arc_length = 0
         curvature_index = 0
-        current_curvature = self.min_curvatures[curvature_index]
-        current_length_limit = self.curvature_length_limits[curvature_index + 1]
+        current_curvature = curvatures[curvature_index]
+        current_length_limit = curvature_length_limits[curvature_index + 1]
         previous_angle = 0
-        self.model_x_data = np.linspace(0, self.energy_x_output_data[-1], len(self.x_data))
-        self.model_y_data = [0]
+        self.model_x_data = np.linspace(0, max_x, len(self.x_data))
+        self.model_y_data = [self.y_data[0]]
         for i in range(0, len(self.model_x_data) - 1):
             change_in_x = self.model_x_data[i + 1] - self.model_x_data[i]
             change_in_l = change_in_x / np.cos(angle)
@@ -160,10 +209,10 @@ class PhysicalModelManyCurvesOptimised(PolymerModel):
             #
             #                                                                         current_length_limit))
             if int(current_l) > int(current_length_limit):
-                if (curvature_index + 1) < len(self.min_curvatures):
+                if (curvature_index + 1) < len(curvatures):
                     curvature_index += 1
-                    current_curvature = self.min_curvatures[curvature_index]
-                    current_length_limit = self.curvature_length_limits[curvature_index + 1]
+                    current_curvature = curvatures[curvature_index]
+                    current_length_limit = curvature_length_limits[curvature_index + 1]
                     arc_length = 0
                     self.curve_x_limits.append(self.model_x_data[i])
                     self.curve_y_limits.append(current_y)
@@ -207,7 +256,7 @@ class PhysicalModelManyCurvesOptimised(PolymerModel):
         self.min_curvatures = [min_curvature / scaling for min_curvature in self.min_curvatures]
 
         self.curvature_length_limits = np.linspace(0, curved_length, len(self.min_curvatures) + 1)
-        self.make_model_data()
+        self.make_model_data(self.min_curvatures, self.curvature_length_limits, self.energy_x_output_data[-1])
         self.energy_x_output_data += x_offset
         self.energy_y_output_data = y_offset - self.energy_y_output_data
         self.model_x_data += x_offset

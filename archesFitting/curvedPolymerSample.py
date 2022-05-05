@@ -153,17 +153,15 @@ class PolymerPlotMethods:
             self.difference_image_obj.difference_image, 100, 200, 3)
         self.x_data, self.y_data, self.y_errors = self.x_data[50:-30], self.y_data[50:-30], self.y_errors[50:-30]
         # rotation to conpensate for sample
-        gradients = []
-        for i in range(500):
-            gradients.append(self.y_data[i + 1] - self.y_data[i])
-        gradient = np.mean(gradients)
-        self.y_data = [y_value - (x_value - self.x_data[0]) * gradient for x_value, y_value in
-                       zip(self.x_data, self.y_data)]
         self.gaussian_averaging_of_y_data()
         self.scatter_worked = True
         if len(self.y_data) < 100:
             print("Too little data found")
             self.scatter_worked = False
+        # split_down_middle
+        middle_point = int(np.mean(self.x_data)) - int(np.min(self.x_data))
+        self.x_data, self.y_data, self.y_errors = self.x_data[middle_point:], self.y_data[middle_point:], self.y_errors[
+                                                                                                          middle_point:]
 
     def findChiSquared(self):
         self.redChiSq = find_reduced_chi_squared(self.y_data, self.shapeFitModel.model_y_data, self.y_errors)
