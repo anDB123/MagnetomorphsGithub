@@ -151,7 +151,8 @@ class PolymerPlotMethods:
     def makeCurveFromDifferenceImage(self):
         self.x_data, self.y_data, self.y_errors = makeCurveFromDifferenceImage(
             self.difference_image_obj.difference_image, 100, 200, 3)
-        self.x_data, self.y_data, self.y_errors = self.x_data[50:-30], self.y_data[50:-30], self.y_errors[50:-30]
+
+        self.x_data, self.y_data, self.y_errors = self.x_data[50:], self.y_data[50:], self.y_errors[50:]
         # rotation to conpensate for sample
         self.gaussian_averaging_of_y_data()
         self.scatter_worked = True
@@ -168,6 +169,9 @@ class PolymerPlotMethods:
 
     def plot_errorbars(self, ax):
         ax.errorbar(self.x_data, self.y_data, yerr=self.y_errors, ls='none', label="Errorbars")
+
+    def plot_data_scatter(self, ax):
+        ax.scatter(self.x_data, self.y_data, ls='none')
 
     def plot_model(self, ax):
         self.shapeFitModel.plotModel(ax)
@@ -193,7 +197,8 @@ class PolymerPlotMethods:
             ax.legend(loc='upper right', prop={'size': self.text_size})
             if self.scatter_worked:
                 self.display_text(ax, 0.05, 0.9,
-                                  "$ \chi ^2 _{red} = $" + "{:.2f}".format(self.redChiSq) + "\nCurrent = {} A".format(
+                                  "$ \chi ^2 _{red} = $" + "{:.2f}".format(
+                                      self.redChiSq) + "\nCurrent = {:.2f} A".format(
                                       self.polymerSample.current))
             else:
                 self.display_text(ax, 0.05, 0.9, "No Curve Found")
@@ -201,8 +206,11 @@ class PolymerPlotMethods:
     def analyseData(self):
         self.makeCurveFromDifferenceImage()
         if self.scatter_worked:
+            print("Curve from differece image worked")
             self.shapeFitModel.fitModel(self.x_data, self.y_data)
             self.findChiSquared()
+        else:
+            print("Curve from differece image didn't work")
 
 
 class CurvedPolymerSample(PolymerSample, PolymerPlotMethods):

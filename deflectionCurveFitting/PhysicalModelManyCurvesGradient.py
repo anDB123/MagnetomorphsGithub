@@ -19,7 +19,7 @@ class PhysicalModelManyCurvesGradient(PolymerModel):
     def __init__(self, current, properties_array, initial_guesses):
         self.initial_guesses = initial_guesses
         self.current = current
-        self.thickness, self.width, self.youngModulus, self.total_length, self.magnet_thickness, self.magnet_mass, self.magnet_strength, self.field_strength, self.density = properties_array
+        self.thickness, self.width, self.youngModulus, self.total_length, self.magnet_thickness, self.magnet_mass, self.field_strength, self.density = properties_array
 
     def update_current(self, new_current):
         self.current = new_current

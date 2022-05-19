@@ -151,7 +151,7 @@ class PolymerPlotMethods:
     def makeCurveFromDifferenceImage(self):
         self.x_data, self.y_data, self.y_errors = makeCurveFromDifferenceImage(
             self.difference_image_obj.difference_image, 100, 200, 3)
-        self.x_data, self.y_data, self.y_errors = self.x_data[50:-30], self.y_data[50:-30], self.y_errors[50:-30]
+        self.x_data, self.y_data, self.y_errors = self.x_data[50:-5], self.y_data[50:-5], self.y_errors[50:-5]
         # rotation to conpensate for sample
         gradients = []
         for i in range(500):
@@ -170,6 +170,9 @@ class PolymerPlotMethods:
 
     def plot_errorbars(self, ax):
         ax.errorbar(self.x_data, self.y_data, yerr=self.y_errors, ls='none', label="Errorbars")
+
+    def plot_data_scatter(self, ax):
+        ax.scatter(self.x_data, self.y_data, label="Data")
 
     def plot_model(self, ax):
         self.shapeFitModel.plotModel(ax)

@@ -24,9 +24,9 @@
      inkscape:document-units="mm"
      showgrid="false"
      height="210mm"
-     inkscape:zoom="0.90509668"
-     inkscape:cx="362.39223"
-     inkscape:cy="377.30776"
+     inkscape:zoom="0.71998991"
+     inkscape:cx="304.86538"
+     inkscape:cy="272.92049"
      inkscape:window-width="1920"
      inkscape:window-height="1001"
      inkscape:window-x="-9"
@@ -34,7 +34,14 @@
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1" />
   <defs
-     id="defs169381" />
+     id="defs169381">
+    <rect
+       x="89.0625"
+       y="387.5"
+       width="170.3125"
+       height="57.03125"
+       id="rect1972" />
+  </defs>
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
@@ -68,13 +75,13 @@
     <path
        style="fill:none;stroke:#5dd073;stroke-width:20;stroke-miterlimit:3.7;stroke-dasharray:none;stroke-opacity:1"
        id="path169482-7"
-       d="M 119.6486,90.320559 A 163.16122,163.16122 0 0 1 70.058104,106.40482"
+       d="M 119.6485,90.320355 A 163.161,163.161 0 0 1 70.058066,106.4046"
        sodipodi:type="arc"
        sodipodi:arc-type="arc"
        sodipodi:start="1.0967112"
        sodipodi:end="1.4176088"
-       sodipodi:ry="163.16122"
-       sodipodi:rx="163.16122"
+       sodipodi:ry="163.161"
+       sodipodi:rx="163.161"
        sodipodi:cy="-54.845737"
        sodipodi:cx="45.161476"
        sodipodi:open="true" />
@@ -104,5 +111,49 @@
        sodipodi:cx="-101.78853"
        d="M 183.73977,18.905235 A 326.32245,326.32245 0 0 1 158.66642,57.513027"
        sodipodi:open="true" />
+    <text
+       xml:space="preserve"
+       id="text1970"
+       style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect1972);fill:#000000;fill-opacity:1;stroke:none"
+       transform="matrix(0.26393881,-0.01845641,0.01845641,0.26393881,-1.2274267,4.1197745)"><tspan
+         x="89.0625"
+         y="423.89501"
+         id="tspan21938">R=330</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="48.758495"
+       y="126.76966"
+       id="text3408"
+       transform="rotate(-16)"><tspan
+         sodipodi:role="line"
+         id="tspan3406"
+         style="stroke-width:0.264583"
+         x="48.758495"
+         y="126.76966">R=163</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="44.246235"
+       y="152.33145"
+       id="text4072"
+       transform="rotate(-40)"><tspan
+         sodipodi:role="line"
+         id="tspan4070"
+         style="stroke-width:0.264583"
+         x="44.246235"
+         y="152.33145">R=114</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       x="43.847076"
+       y="170.95958"
+       id="text4802"
+       transform="rotate(-58)"><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.264583"
+         x="43.847076"
+         y="170.95958"
+         id="tspan10492">R=336</tspan></text>
   </g>
 </svg>

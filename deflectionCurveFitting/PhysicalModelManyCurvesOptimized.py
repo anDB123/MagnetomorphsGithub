@@ -19,7 +19,8 @@ class PhysicalModelManyCurvesOptimised(PolymerModel):
     def __init__(self, current, properties_array, initial_guesses):
         self.initial_guesses = initial_guesses
         self.current = current
-        self.thickness, self.width, self.youngModulus, self.total_length, self.magnet_thickness, self.magnet_mass, self.magnet_strength, self.field_strength, self.density = properties_array
+        self.field_strength = self.current * 0.006 / 4
+        self.thickness, self.width, self.youngModulus, self.total_length, self.magnet_thickness, self.magnet_mass, self.magnet_strength, self.density = properties_array
 
     def update_current(self, new_current):
         self.current = new_current
@@ -132,6 +133,10 @@ class PhysicalModelManyCurvesOptimised(PolymerModel):
                                                                         energy_curve_resolution)
         print()
         print("The minimum energy curvatures are {}".format(curvature_array))
+        self.min_curvatures = curvature_array
+        self.curvature_length_limits = np.linspace(0, self.total_length, len(self.min_curvatures) + 1)
+        self.energy_x_output_data = min_x_vals
+        self.energy_y_output_data = min_y_vals
         return min_x_vals, min_y_vals, curvature_array
 
     def make_model_data(self):
@@ -219,5 +224,5 @@ class PhysicalModelManyCurvesOptimised(PolymerModel):
 
     def plotModel(self, ax):
         # ax.scatter(self.energy_x_output_data, self.energy_y_output_data, label="energy output", s=2, c='k')
-        ax.scatter(self.curve_x_limits, self.curve_y_limits, label="Curve Limits")
+        # ax.scatter(self.curve_x_limits, self.curve_y_limits, label="Curve Limits")
         ax.plot(self.model_x_data, self.model_y_data, label="Model data")

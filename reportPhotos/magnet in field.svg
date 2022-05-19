@@ -25,9 +25,9 @@
      inkscape:document-units="mm"
      showgrid="false"
      height="296mm"
-     inkscape:zoom="0.5"
-     inkscape:cx="219.97309"
-     inkscape:cy="506.14706"
+     inkscape:zoom="0.70710678"
+     inkscape:cx="736.09816"
+     inkscape:cy="168.99852"
      inkscape:window-width="1920"
      inkscape:window-height="1001"
      inkscape:window-x="-9"
@@ -254,13 +254,13 @@
        style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect83977);fill:#000000;fill-opacity:1;stroke:none"><tspan
          x="80.609375"
          y="788.75634"
-         id="tspan193603"><tspan
+         id="tspan27503"><tspan
            style="font-family:'MS Outlook';-inkscape-font-specification:'MS Outlook';fill:#ffffff"
-           id="tspan193601">θ</tspan></tspan></text>
+           id="tspan27501">θ</tspan></tspan></text>
     <rect
        style="fill:#9b9b9b;fill-opacity:1;stroke:none;stroke-width:1.41328;stroke-miterlimit:4;stroke-dasharray:1.41328, 1.41328;stroke-dashoffset:0"
        id="rect78830"
-       width="64.876701"
+       width="64.876999"
        height="29.353432"
        x="20.360521"
        y="98.734787"
@@ -272,21 +272,37 @@
        style="font-style:normal;font-weight:normal;font-size:40px;line-height:1.25;font-family:sans-serif;white-space:pre;shape-inside:url(#rect120997);fill:#000000;fill-opacity:1;stroke:none"><tspan
          x="405.74609"
          y="468.24266"
-         id="tspan193607"><tspan
+         id="tspan27507"><tspan
            dx="0 24.199982 22.559967 16.520004 37.399979 22.440033 24.720001 36.279984 22.440033 24.599991 22.559967"
-           id="tspan193605">PermanMaget</tspan></tspan></text>
+           id="tspan27505">PermanMaget</tspan></tspan></text>
     <text
        xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:6.70204px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.167551"
-       x="21.358046"
-       y="123.49149"
-       id="text123879"
-       transform="rotate(-30)"><tspan
+       style="font-style:normal;font-weight:normal;font-size:17.8551px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.446378"
+       x="20.515057"
+       y="120.30869"
+       id="text123879-0-9"
+       transform="rotate(-30)"
+       inkscape:transform-center-x="-127.58396"
+       inkscape:transform-center-y="40.530818"><tspan
          sodipodi:role="line"
-         id="tspan123877"
-         style="stroke-width:0.167551"
-         x="21.358046"
-         y="123.49149">Permanent Magnet</tspan></text>
+         style="stroke-width:0.446378"
+         x="20.515057"
+         y="120.30869"
+         id="tspan19660">N</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:17.8551px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.446378"
+       x="73.879959"
+       y="120.92316"
+       id="text123879-0-9-1"
+       transform="rotate(-30)"
+       inkscape:transform-center-x="-127.58396"
+       inkscape:transform-center-y="40.530818"><tspan
+         sodipodi:role="line"
+         style="stroke-width:0.446378"
+         x="73.879959"
+         y="120.92316"
+         id="tspan19660-1">S</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:10.5833px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.264583"
@@ -298,14 +314,42 @@
          style="stroke-width:0.264583"
          x="39.722252"
          y="15.18667">Uniform Field</tspan></text>
+    <path
+       style="fill:none;stroke:#c65656;stroke-width:1.512;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-mid:url(#Arrow1Lstart)"
+       id="path899"
+       sodipodi:type="arc"
+       sodipodi:cx="53.08831"
+       sodipodi:cy="116.09098"
+       sodipodi:rx="40"
+       sodipodi:ry="40"
+       sodipodi:start="0.43633231"
+       sodipodi:end="2.7052603"
+       sodipodi:arc-type="arc"
+       d="M 89.340622,132.99571 A 40,40 0 0 1 53.08831,156.09098 40,40 0 0 1 16.835999,132.99571"
+       sodipodi:open="true"
+       transform="rotate(-30)" />
+    <path
+       style="fill:none;stroke:#c65656;stroke-width:1.512;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-mid:url(#Arrow1Lstart)"
+       id="path1393"
+       sodipodi:type="arc"
+       sodipodi:cx="53.08831"
+       sodipodi:cy="116.09098"
+       sodipodi:rx="40"
+       sodipodi:ry="40"
+       sodipodi:start="3.577925"
+       sodipodi:end="5.846853"
+       sodipodi:arc-type="arc"
+       d="M 16.835999,99.186249 A 40,40 0 0 1 53.08831,76.090981 40,40 0 0 1 89.340622,99.18625"
+       sodipodi:open="true"
+       transform="rotate(-30)" />
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer3"
      inkscape:label="Layer 2">
     <path
-       style="fill:none;stroke:#000000;stroke-width:1.00531;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1.00531, 1.00531;stroke-dashoffset:0;stroke-opacity:1"
-       d="M 8.5213669,126.12468 130.66745,55.60362"
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:1,1;stroke-dashoffset:0;stroke-opacity:1"
+       d="M 8.4063341,126.32392 74.646039,88.080419"
        id="path78964" />
   </g>
 </svg>
